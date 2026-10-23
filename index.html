@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DROPZONE</title>
+<meta name="description" content="DROPZONE: a first-person drop-trooper game that runs in your browser. Drop onto hostile planets, do the job, get out alive.">
+<meta property="og:title" content="DROPZONE">
+<meta property="og:description" content="Drop onto a hostile planet. Do the job. Get out alive. A browser game in one HTML file.">
+<meta property="og:image" content="screens/swamp_rain.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M30 22L4 14L8 20L28 30Z M34 22L60 14L56 20L36 30Z' fill='%23c4a050'/%3E%3Cpath d='M32 6L39 22L36 42L32 60L28 42L25 22Z' fill='%23dec478'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #0b0d0c; --iron: #15181b; --iron2: #1d2125; --line: #3a3020; --brass: #c9a24a; --brass2: #7a5c1e; --y: #e8c35a; --fg: #4a7344; --fg2: #8fd47e; --txt: #e6e1cf; --mut: #9a957f; --red: #e8443a; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: #080908; }
+body { margin: 0; background: #080908 radial-gradient(ellipse at 50% 120vh, rgba(74,115,68,.16), transparent 60%) no-repeat; color: var(--txt); font: 16px/1.6 "Space Grotesk", system-ui, sans-serif; }
+a { color: var(--y); }
+.wrap { width: min(1180px, 100% - 32px); margin: 0 auto; }
+.px { font-family: Silkscreen, monospace; letter-spacing: .14em; }
+.kicker { font: 700 12px Silkscreen, monospace; letter-spacing: .2em; color: var(--brass); display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
+.kicker::before { content: ""; width: 16px; height: 2px; background: var(--fg2); box-shadow: 0 3px 0 var(--fg); }
+/* hero */
+.hero { position: relative; min-height: 92vh; display: grid; align-items: end; padding: 0 0 64px; overflow: hidden; }
+.hero .bg { position: absolute; inset: 0; background: url(screens/swamp_rain.jpg) center/cover no-repeat; image-rendering: pixelated; filter: saturate(.9); }
+.hero .bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,8,8,.25) 0%, rgba(7,8,8,.55) 50%, #080908 100%), radial-gradient(ellipse at 20% 80%, rgba(7,8,8,.7), transparent 60%); }
+.hero .wrap { position: relative; }
+.sigil { width: 92px; height: 92px; filter: drop-shadow(0 6px 0 #1a1408) drop-shadow(0 0 28px rgba(201,162,74,.35)); }
+h1 { margin: 10px 0 0; font: 700 clamp(36px, 10.5vw, 132px)/1 Silkscreen, monospace; letter-spacing: .04em; background: linear-gradient(#ffe7a0, #e0b04a 55%, #9a7020); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 5px 0 #2a1e08); }
+.tag { font-size: clamp(18px, 2.4vw, 24px); color: #d8d2bd; margin: 14px 0 28px; max-width: 640px; }
+.cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.btn { display: inline-block; padding: 18px 34px; font: 700 18px Silkscreen, monospace; letter-spacing: .18em; color: #f6efd2; text-decoration: none; background: linear-gradient(#5d8f52, #3c6334); border: 2px solid var(--brass);
+  box-shadow: 0 4px 0 #1d2c19, inset 0 1px 0 rgba(255,255,255,.25); text-shadow: 0 1px 0 #1d2c19; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transition: filter .15s; }
+.btn:hover { filter: brightness(1.15); }
+.btn.ghost { background: rgba(15,18,20,.8); color: var(--y); border-color: var(--brass2); text-shadow: none; box-shadow: inset 0 0 0 1px rgba(201,162,74,.25); font-size: 14px; padding: 14px 22px; }
+.note { color: var(--mut); font-size: 14px; margin-top: 16px; }
+/* panels */
+section.band { padding: 72px 0; }
+.panel { position: relative; background: radial-gradient(circle at 8px 8px, #d8b860 1.6px, #5a4416 2.2px, transparent 2.6px), radial-gradient(circle at calc(100% - 8px) 8px, #d8b860 1.6px, #5a4416 2.2px, transparent 2.6px),
+  radial-gradient(circle at 8px calc(100% - 8px), #d8b860 1.6px, #5a4416 2.2px, transparent 2.6px), radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), #d8b860 1.6px, #5a4416 2.2px, transparent 2.6px), linear-gradient(180deg, var(--iron2), var(--iron));
+  border: 1px solid var(--line); box-shadow: inset 0 0 0 1px rgba(201,162,74,.35), 0 8px 24px rgba(0,0,0,.5); clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px); padding: 26px; }
+h2 { font: 700 clamp(28px, 4vw, 40px)/1.1 Silkscreen, monospace; color: var(--y); margin: 0 0 24px; letter-spacing: .06em; }
+.feats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } @media (max-width: 900px) { .feats { grid-template-columns: 1fr 1fr; } } @media (max-width: 560px) { .feats { grid-template-columns: 1fr; } }
+.feats h3 { margin: 0 0 8px; font: 700 15px Silkscreen, monospace; letter-spacing: .1em; color: var(--txt); }
+.feats p { margin: 0; color: #c9c4b2; font-size: 15px; }
+/* gallery */
+.gal { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.gal figure { margin: 0; position: relative; overflow: hidden; border: 1px solid var(--line); box-shadow: inset 0 0 0 1px rgba(201,162,74,.3); background: #000; }
+.gal img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; transition: transform .3s; cursor: zoom-in; }
+.gal figure:hover img { transform: scale(1.03); }
+.gal figcaption { position: absolute; left: 0; bottom: 0; padding: 6px 10px; font: 10px Silkscreen, monospace; letter-spacing: .14em; color: var(--y); background: rgba(8,9,10,.82); }
+.g1 { grid-column: span 4; grid-row: span 2; } .g2, .g3 { grid-column: span 2; } .g4, .g5, .g6 { grid-column: span 2; } .g7, .g8 { grid-column: span 3; }
+@media (max-width: 760px) { .gal { grid-template-columns: 1fr 1fr; } .gal figure { grid-column: span 1 !important; grid-row: auto !important; } .g1 { grid-column: span 2 !important; } }
+/* controls */
+.keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px 28px; }
+.keys div { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+kbd { min-width: 92px; text-align: center; padding: 4px 8px; font: 11px Silkscreen, monospace; letter-spacing: .08em; color: var(--y); background: #0e1012; border: 1px solid var(--brass2); }
+.two { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; } @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+ul.ticks { margin: 0; padding: 0; list-style: none; } ul.ticks li { padding: 6px 0 6px 22px; position: relative; color: #c9c4b2; } ul.ticks li::before { content: "◆"; position: absolute; left: 0; color: var(--fg2); font-size: 12px; top: 9px; }
+footer { padding: 40px 0 60px; color: var(--mut); font-size: 14px; border-top: 1px solid #1c1a14; }
+/* lightbox */
+#lb { position: fixed; inset: 0; background: rgba(0,0,0,.9); display: none; place-items: center; z-index: 9; cursor: zoom-out; padding: 16px; } #lb.on { display: grid; } #lb img { max-width: 100%; max-height: 100%; image-rendering: pixelated; border: 1px solid var(--brass2); }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="bg"></div>
+  <div class="wrap">
+    <svg class="sigil" viewBox="0 0 64 64" shape-rendering="crispEdges"><g stroke="#100c0c" stroke-width="2.4" paint-order="stroke"><path d="M30 22L4 14L8 20L28 30Z M34 22L60 14L56 20L36 30Z" fill="#c4a050"/><path d="M14 26L28 34L27 37L12 30Z M50 26L36 34L37 37L52 30Z" fill="#9a7a34"/><path d="M32 6L39 22L36 42L32 60L28 42L25 22Z" fill="#dec478"/><path d="M32 12L34 24L32 44L30 24Z" fill="#fff2c4"/></g></svg>
+    <h1>DROPZONE</h1>
+    <p class="tag">Drop onto a hostile planet. Do the job. Get out alive.<br>A first-person drop-trooper game with pixel-art worlds, running entirely in your browser.</p>
+    <div class="cta"><a class="btn" href="play.html">▶ PLAY NOW</a><a class="btn ghost" href="#about">WHAT IS THIS?</a></div>
+    <p class="note">Desktop browser with mouse and keyboard · one ~8 MB file, nothing to install · progress saves in your browser</p>
+  </div>
+</header>
+
+<main>
+<section class="band" id="about"><div class="wrap">
+  <div class="kicker">THE WAR FOR SECTOR DRACO</div>
+  <h2>A war you fight one drop at a time</h2>
+  <div class="feats">
+    <div class="panel"><h3>Walk your ship</h3><p>Between missions you're aboard the SES Starfall: plot a course at the war table, dress your trooper in the armory, buy gear from the Quartermaster, upgrade the ship and watch its batteries shell the planet below.</p></div>
+    <div class="panel"><h3>Drop in a hellpod</h3><p>Pick an operation, seal the pod and fall. Hold the objective, call stratagems with arrow codes, then hold the extraction pad until the Pelican comes.</p></div>
+    <div class="panel"><h3>Bugs and mercenaries</h3><p>Hives of Scavengers, Spitters, Warriors and Chargers on some worlds; Skull Company mercenaries in others, who take cover, flank and radio for drop pods of reinforcements.</p></div>
+    <div class="panel"><h3>Hand-made worlds</h3><p>A toxic swamp jungle with heavy rain and lightning, a desert of dunes, mesas, oases and giant bones, and more to come. Every operation is generated fresh.</p></div>
+    <div class="panel"><h3>A campaign that moves</h3><p>Liberate worlds, defend them from counter-attacks, rise through ten ranks, earn medals and declassify new weapons and stratagems.</p></div>
+    <div class="panel"><h3>Twelve ship modules</h3><p>Extra hellpods, coolant lines, Eagle bays, orbital scanners, sample satchels and more: every upgrade changes how your next drop plays.</p></div>
+  </div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <div class="kicker">FROM THE FRONT</div>
+  <h2>Screenshots</h2>
+  <div class="gal">
+    <figure class="g1"><img src="screens/swamp_rain.jpg" alt="Swamp jungle in heavy rain" loading="lazy"><figcaption>MYRRH IV · HEAVY RAIN</figcaption></figure>
+    <figure class="g2"><img src="screens/bridge.jpg" alt="The ship's bridge, escorts and the planet" loading="lazy"><figcaption>THE BRIDGE</figcaption></figure>
+    <figure class="g3"><img src="screens/desert_oasis.jpg" alt="Desert oasis" loading="lazy"><figcaption>VELION PRIME · OASIS</figcaption></figure>
+    <figure class="g4"><img src="screens/desert_hand.jpg" alt="Giant stone hand in the desert" loading="lazy"><figcaption>THE OLD HAND</figcaption></figure>
+    <figure class="g5"><img src="screens/board.jpg" alt="The war table" loading="lazy"><figcaption>WAR TABLE</figcaption></figure>
+    <figure class="g6"><img src="screens/eng.jpg" alt="Engineering screen" loading="lazy"><figcaption>ENGINEERING</figcaption></figure>
+    <figure class="g7"><img src="screens/armory.jpg" alt="Armory screen" loading="lazy"><figcaption>ARMORY</figcaption></figure>
+    <figure class="g8"><img src="screens/shop.jpg" alt="Requisition screen" loading="lazy"><figcaption>REQUISITION</figcaption></figure>
+  </div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap two">
+  <div class="panel">
+    <div class="kicker">CONTROLS</div>
+    <div class="keys">
+      <div><kbd>WASD</kbd>Move</div><div><kbd>MOUSE</kbd>Aim</div><div><kbd>LEFT CLICK</kbd>Fire</div><div><kbd>R</kbd>Reload</div>
+      <div><kbd>1 / 2</kbd>Switch weapon</div><div><kbd>SHIFT</kbd>Sprint</div><div><kbd>SPACE</kbd>Jump</div><div><kbd>C</kbd>Dive</div>
+      <div><kbd>G</kbd>Grenade</div><div><kbd>F</kbd>Stim</div><div><kbd>E</kbd>Use / interact</div><div><kbd>HOLD Q + WASD</kbd>Stratagem code</div>
+      <div><kbd>HOLD TAB</kbd>Tactical map</div><div><kbd>ESC</kbd>Pause</div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="kicker">FIRST DROP</div>
+    <ul class="ticks">
+      <li>Press <b>Play</b>, then <b>Board your ship</b>. The first time, a short tutorial walks you through a drop.</li>
+      <li>Click the game window to capture the mouse.</li>
+      <li>Walk to a Starfall pod in the launch bay and press <b>E</b> to pick an operation.</li>
+      <li>Your progress lives in this browser's local storage; clearing site data resets it.</li>
+    </ul>
+    <p style="margin:22px 0 0"><a class="btn" href="play.html" style="font-size:15px;padding:14px 26px">▶ PLAY</a></p>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">DROPZONE is a work-in-progress prototype. Built as a single HTML file: WebGL, Web Audio and pixel art, no engine. Source and build script are in the repository.</div></footer>
+
+<div id="lb"><img alt=""></div>
+<script>
+const lb = document.getElementById("lb"), li = lb.querySelector("img");
+document.querySelectorAll(".gal img").forEach(i => i.onclick = () => { li.src = i.src; li.alt = i.alt; lb.classList.add("on"); });
+lb.onclick = () => lb.classList.remove("on"); addEventListener("keydown", e => { if (e.key === "Escape") lb.classList.remove("on"); });
+</script>
+</body>
+</html>
